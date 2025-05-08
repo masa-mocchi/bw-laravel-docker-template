@@ -26,4 +26,3 @@ class TodoController extends Controller
         return view('todo.create');
     }
 }
-
