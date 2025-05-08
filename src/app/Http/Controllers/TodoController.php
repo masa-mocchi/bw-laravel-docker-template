@@ -20,5 +20,10 @@ class TodoController extends Controller
         return view('todo.index', ['todos' => $todos]);
         // [blade内での変数名 => 代入したい値]
     }
+
+    public function create()
+    {
+        return view('todo.create');
+    }
 }
 
