@@ -15,9 +15,10 @@ class TodoController extends Controller
         $todo = new Todo();
         $todos = $todo->all();
         // dd($todos);
-        // TodoModelを介して、todosテーブルのデータの全件取得を確認できたためddは削除
+        // TodoModelを介して、todosテーブルのデータの全件取得を確認できたためddは削除（var_dampの機能）
 
-        return view('todo.index');
+        return view('todo.index', ['todos' => $todos]);
+        // [blade内での変数名 => 代入したい値]
     }
 }
 
