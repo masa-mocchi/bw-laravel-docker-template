@@ -20,13 +20,19 @@ use Illuminate\Http\Request;
 
 class TodoController extends Controller
 {
+    private $todo;
+
+    public function __construct(Todo $todo)
+    {
+        $this->todo = $todo;
+    }
+
 
     public function index()
     {
-        $todo = new Todo();
-        // dd($todo);
-        $todos = $todo->all();
-        // dd($todos);
+        
+        $todos = $this->todo->all();
+    
         return view('todo.index', ['todos' => $todos]);
     }
 
@@ -40,9 +46,7 @@ class TodoController extends Controller
 
     public function show($id)
     {
-        $model = new Todo();
-        $todo = $model->find($id);
-    
+        $todo = $this->todo->find($id);
         return view('todo.show', ['todo' => $todo]);
     }
 
@@ -62,29 +66,33 @@ class TodoController extends Controller
     // $todo	App\Todo クラスのインスタンス。$todo instanceof Todo は true
     // Laravelの Request クラスは、フォームから送信されたデータや、
     // リクエストに関する情報（URL・ヘッダー・IPなど） をまとめて持ってる便利なオブジェクト。
-    public function store(Request $request)
+
     // メソッドの引数に渡してインスタンス化する方法
     // メソッドインジェクションという。
+    // dd($request->all());
+    // array:2 [▼
+    // "_token" => "0PX8lvqTqEbpXD13E9foxdMAccVgmDpnK08iGA0a"
+    // "content" => "dd($request->all());"
+    // ]
+
+    // dd($inputs);
+    // array:2 [▼
+    // "_token" => "0PX8lvqTqEbpXD13E9foxdMAccVgmDpnK08iGA0a"
+    // "content" => "dd($inputs);"
+    // ]
+    // ->fill()は$todo->{連想配列のkey} = {連想配列のvalue}を配列の全ての要素に対して行ってくれます。
+
+    
+    public function store(Request $request)
     {
-        // dd($request->all());
-        // array:2 [▼
-        // "_token" => "0PX8lvqTqEbpXD13E9foxdMAccVgmDpnK08iGA0a"
-        // "content" => "dd($request->all());"
-        // ]
         $inputs = $request->all();
-        // dd($inputs);
-        // array:2 [▼
-        // "_token" => "0PX8lvqTqEbpXD13E9foxdMAccVgmDpnK08iGA0a"
-        // "content" => "dd($inputs);"
-        // ]
-
-        $todo = new Todo();
-        // ->fill()は$todo->{連想配列のkey} = {連想配列のvalue}を配列の全ての要素に対して行ってくれます。
-        $todo->fill($inputs);
-        $todo->save();
-
+    
+        $this->todo->fill($inputs);
+        $this->todo->save();
+    
         return redirect()->route('todo.index');
     }
+
 
 }
 // データの流れ（store）
