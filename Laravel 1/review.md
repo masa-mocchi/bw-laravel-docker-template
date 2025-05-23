@@ -11,7 +11,7 @@ Illuminate\Database\Eloquent\Collection クラスのインスタンスで、Todo
 
 Collectionクラスのインスタンス。
 CollectionクラスにはTodoインスタンスが格納されている。
-Todosテーブルのカラム、レコードを配列で取得
+Todosテーブルのカラム、レコードを配列っぽい形で取得
 データ存在時の返り値はarrayで返される。
 
 ### 配列の代わりにCollectionクラスを使用するメリットは
@@ -76,7 +76,7 @@ DB構成をコードで管理できる（バージョン管理も可能）
 →SQLを知らなくてもPHPコードでテーブルを操作できる。
 チーム開発で統一されたDB環境を再現できる
 →マイグレーションファイルをGitで共有することで開発者全員が同じテーブルを作成できる
- 現在のデータベースの状態を他の開発者に共有することができる。
+現在のデータベースの状態を他の開発者に共有することができる。
 デプロイ時に簡単にテーブルを作成できる
 デプロイ→開発していたWebアプリをサーバーやクラウドにアップロードして
 使えるように公開・配置すること。
@@ -137,10 +137,270 @@ CSRFトークンを一意のキーとしてHTMLフォームを埋め込み、サ
 "→&quot;
 '→&#039;,&apos;
 
+
+
 <!-- バックスラッシュはOption+￥で打てる -->
 
+### Laravel１口頭レビューの課題
+# １．Modelクラスのインスタンスのデータ型
+
+A.「object（オブジェクト）」型
+
+<!-- $todo = new Todo();
+Eloquentモデルクラスのインスタンス
+App\Models\Todo
+Todoモデル
 
 
+    public function index()
+    {
+        $todo = new Todo();
+        dd($todo);
+        App\Todo {#230 ▼
+            #table: "todos"
+            #fillable: array:1 [▶]
+            #connection: null
+            #primaryKey: "id"
+            #keyType: "int"
+            +incrementing: true
+            #with: []
+            #withCount: []
+            #perPage: 15
+            +exists: false
+            +wasRecentlyCreated: false
+            #attributes: []
+            #original: []
+            #changes: []
+            #casts: []
+            #dates: []
+            #dateFormat: null
+            #appends: []
+            #dispatchesEvents: []
+            #observables: []
+            #relations: []
+            #touches: []
+            +timestamps: true
+            #hidden: []
+            #visible: []
+            #guarded: array:1 [▶]
+          }
+        $todos = $todo->all();
+        return view('todo.index', ['todos' => $todos]);
+    }
+
+    public function index()
+    {
+        $todo = new Todo();
+        // dd($todo);
+        $todos = $todo->all();
+        // dd($todos);
+        return view('todo.index', ['todos' => $todos]);
+    }
+Illuminate\Database\Eloquent\Collection {#274 ▼
+  #items: array:12 [▼
+    0 => App\Todo {#275 ▼
+      #table: "todos"
+      #fillable: array:1 [▶]
+      #connection: "mysql"
+      #primaryKey: "id"
+      #keyType: "int"
+      +incrementing: true
+      #with: []
+      #withCount: []
+      #perPage: 15
+      +exists: true
+      +wasRecentlyCreated: false
+      #attributes: array:4 [▶]
+      #original: array:4 [▶]
+      #changes: []
+      #casts: []
+      #dates: []
+      #dateFormat: null
+      #appends: []
+      #dispatchesEvents: []
+      #observables: []
+      #relations: []
+      #touches: []
+      +timestamps: true
+      #hidden: []
+      #visible: []
+      #guarded: array:1 [▶]
+    }
+    1 => App\Todo {#276 ▶}
+    2 => App\Todo {#277 ▶}
+    3 => App\Todo {#278 ▶}
+    4 => App\Todo {#279 ▶}
+    5 => App\Todo {#280 ▶}
+    6 => App\Todo {#281 ▶}
+    7 => App\Todo {#282 ▶}
+    8 => App\Todo {#283 ▶}
+    9 => App\Todo {#284 ▶}
+    10 => App\Todo {#285 ▶}
+    11 => App\Todo {#286 ▶}
+  ]
+} -->
+
+# ２．TodoControllerの$todosのデータ型,$todoのデータ型
+
+A.$todosのデータ型は、コレクションクラスのオブジェクト型
+  $todoはクラスのインスタンスなのでオブジェクト型
+
+<!-- $todo = new Todo(); のデータ型
+php
+コードをコピーする
+$todo = new Todo();
+ここで $todo は、App\Models\Todo クラスの**インスタンス（オブジェクト）**です。
+
+データ型：Todo クラスのオブジェクト型
+
+php
+コードをコピーする
+// 確認方法
+var_dump($todo);
+// 出力例
+object(App\Models\Todo)#123 (0) { ... }
+
+$todos = $todo->all(); のデータ型
+php
+コードをコピーする
+$todos = $todo->all();
+all() は Eloquentモデルのメソッドで、データベースから全件取得して、**コレクション（Collection）**として返します。
+
+データ型：Illuminate\Database\Eloquent\Collection
+
+これは、**複数のTodoインスタンスが入った「オブジェクトの配列っぽいもの」**です。Laravelではこの「コレクション型」がよく使われます。
+
+php
+コードをコピーする
+// 確認方法
+dd($todos);
+// 出力例（ダンプで見れる）
+Collection {#456 ▼
+  #items: array:3 [▼
+    0 => Todo {#789 ...}
+    1 => Todo {#790 ...}
+    2 => Todo {#791 ...}
+  ]
+} -->
+<!-- 変数名	型	中身のイメージ
+$todo	App\Models\Todo（オブジェクト型）	1つのTodoモデル（空っぽ）
+$todos	Illuminate\Database\Eloquent\Collection -->
+
+# ３．コレクションクラスのインスタンスと普通のインスタンスの違い
+
+A.
+「普通のインスタンス」は、
+クラスから生成された1つのオブジェクトのことです。
+<!-- $todo = new Todo();
+$todo は App\Models\Todo というクラスのインスタンスです。
+→ これは1件分のデータを扱う単体オブジェクトです。 -->
+
+Collection クラスのインスタンスは、
+複数のモデルのインスタンス（つまりオブジェクト）をまとめた「箱」です。
+各レコードを取り出せる
+配列だとできない
+<!-- Eloquentでデータを複数件取得すると、Laravelはこの「コレクション」として返してくれます。 -->
+
+<!-- 比較項目	普通のインスタンス ($todo)	コレクションクラスのインスタンス ($todos)
+データの数	1件だけ	複数件（0件もありえる）
+型	App\Models\Todo	Illuminate\Database\Eloquent\Collection
+主な使い道	1レコードの作成、更新、削除など	一覧表示、ループ処理、フィルタなど
+便利なメソッド	save(), delete() など	map(), filter(), pluck() など -->
+
+# ４．viewはメソッド？関数？
+
+A.
+グローバル関数
+<!--
+Laravelの view() は、PHPのグローバル関数として定義されています。
+だから、クラスやインスタンスを使わずに、直接呼び出せるんです。
+
+view() は、Laravelに最初から用意されている ヘルパ関数（Helper Function）で、
+Bladeテンプレートなどのビューを返す役割があります。
+「メソッド」との違いは？
+項目	関数（view()）	メソッド（例：$request->input()）
+所属	クラスに属さない	クラスに属する
+呼び出し方	view()	$オブジェクト->メソッド名()
+例	view('todo.index')	$todo->save() -->
+
+## view() の中身
+<!-- Laravelの view() 関数は、実は裏側で ViewFactory というクラスのメソッドを呼び出しています。
+
+function view($view = null, $data = [], $mergeData = [])
+{
+    return app('view')->make($view, $data, $mergeData);
+}
+つまり：
+
+「関数」として簡単に使えるけど
+内部では「クラスのメソッド（make）」を呼んでいる
+という、Laravelらしい便利で賢い仕組みです -->
+
+# 5．$indexメソッドのall()メソッドのステートメントはなんですか。
+
+A.
+Eloquentのall()メソッドで、SQL的には SELECT * FROM todos を実行している
+
+# 6.storeメソッドの引数(Request $Request)を調べる
+
+A.
+Requestクラス を使い、formタグからのPOSTデータを受け取る。
+$requestに格納。内容はtokenとcontentの連想配列２つ。
+$inputsに入る。
+$todoにcontentだけ入る。fillable()でそう設定しているから。
+insertする。
+
+$todo = new Todo();
+$todo->fill($inputs);
+$todo->save();
 
 
+->fill()は$todo->{連想配列のkey} = {連想配列のvalue}を配列の全ての要素に対して行ってくれます。
 
+
+1. php
+public function store(Request $request)
+
+Request は Laravel の Illuminate\Http\Request クラス。
+これを使うことで、フォーム送信されたデータ（POSTデータ）を受け取れる。
+$requestに新規投稿ページのformタグからのデータが
+格納されているので、以下のようにそれぞれ代入する
+
+2. php
+$request->all()
+$inputs = $request->all();
+
+フォームで送られてきたすべての入力データを配列として取得。
+        // dd($request->all());
+        // array:2 [▼
+        // "_token" => "0PX8lvqTqEbpXD13E9foxdMAccVgmDpnK08iGA0a"
+        // "content" => "dd($request->all());"
+        // ]
+        $inputs = $request->all();
+        // dd($inputs);
+        // array:2 [▼
+        // "_token" => "0PX8lvqTqEbpXD13E9foxdMAccVgmDpnK08iGA0a"
+        // "content" => "dd($inputs);"
+        // ]
+
+3. $todo = new Todo();
+Todoモデルの新しいインスタンス（＝空のToDo）を作成します。
+
+php
+$todo = new Todo();
+これはまだ中身が空のオブジェクトです。
+
+4. $todo->fill($inputs);
+fill()はEloquentモデルのメソッドで、配列のkeyとモデルのプロパティ名が一致すれば、自動で代入します。
+
+php
+$inputs = [
+    'content' => '牛乳を買う'
+];
+$todo->fill($inputs); // → $todo->content = '牛乳を買う';
+⚠️ ただし注意点！
+
+Todoモデルで「どのプロパティを一括代入していいか」を許可しておかないと動きません。
+モデルにこのような記述が必要：
+php
+protected $fillable = ['content'];

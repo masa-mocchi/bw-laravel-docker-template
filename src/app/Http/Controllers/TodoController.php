@@ -1,35 +1,74 @@
 <?php
 
+// 1. 名前空間と必要なクラスの読み込み
 namespace App\Http\Controllers;
+// Eloquent モデル。todos テーブルとつながっている。
+// SQLを直に書かなくても、オブジェクトを操作するだけでDB操作ができる
+// use文で他のクラスをインポート
+// App\Todo はモデル（Eloquent）
+// Illuminate\Http\Request はフォームリクエストなど、
+// HTTPリクエストのクラス（store() で使う）
 
-// 追加
 use App\Todo;
-
 use Illuminate\Http\Request;
+
+// 2. コントローラー定義
+// Laravelの Controller を継承しています
+// （app/Http/Controllers/Controller.php）。
+// Laravelの標準機能（バリデーション、認可など）が使えます。
+// TodoController クラスは Controller クラスを継承している
 
 class TodoController extends Controller
 {
+
     public function index()
     {
-        // 追加
         $todo = new Todo();
+        // dd($todo);
         $todos = $todo->all();
         // dd($todos);
-        // TodoModelを介して、todosテーブルのデータの全件取得を確認できたためddは削除（var_dampの機能）
-
         return view('todo.index', ['todos' => $todos]);
-        // [blade内での変数名 => 代入したい値]
     }
 
+
+    // 4.create() メソッド – 作成フォームの表示
+    // 作成フォーム用のビュー resources/views/todo/create.blade.php を表示。
     public function create()
     {
         return view('todo.create');
     }
 
+    // 5. store() メソッド – フォームの保存処理
+    // $request->all() で POSTデータをすべて取得。
+    // $todo->fill() は、$fillable がモデルに設定されている必要があります（マスアサインメント）。
+    // 保存後、todo.index（ルート名）にリダイレクトします。
+    // Request $request	フォーム送信データを受け取る Laravelのヘルパー。型は Illuminate\Http\Request
+    // $inputs = $request->all();の内容
+    // all()	フォームから送られてきた全データを**連想配列（array）**で取得
+    // $inputs	例えば、['content' => '牛乳を買う'] みたいな形になる
+    // 備考：もし CSRFトークン（_token）や他の隠しフィールドが含まれてたら、それも入る。
+    // だから、後で使う fill() に安全性のために $fillable をちゃんと定義しとく
+    // new Todo()	モデルの新しいインスタンスを作成。中身はまだ空っぽ
+    // $todo = new Todo();の内容
+    // new Todo()	モデルの新しいインスタンスを作成。中身はまだ空っぽ
+    // $todo	App\Todo クラスのインスタンス。$todo instanceof Todo は true
+    // Laravelの Request クラスは、フォームから送信されたデータや、
+    // リクエストに関する情報（URL・ヘッダー・IPなど） をまとめて持ってる便利なオブジェクト。
     public function store(Request $request)
+    // メソッドの引数に渡してインスタンス化する方法
+    // メソッドインジェクションという。
     {
+        // dd($request->all());
+        // array:2 [▼
+        // "_token" => "0PX8lvqTqEbpXD13E9foxdMAccVgmDpnK08iGA0a"
+        // "content" => "dd($request->all());"
+        // ]
         $inputs = $request->all();
-        dd($inputs);
+        // dd($inputs);
+        // array:2 [▼
+        // "_token" => "0PX8lvqTqEbpXD13E9foxdMAccVgmDpnK08iGA0a"
+        // "content" => "dd($inputs);"
+        // ]
 
         $todo = new Todo();
         // ->fill()は$todo->{連想配列のkey} = {連想配列のvalue}を配列の全ての要素に対して行ってくれます。
@@ -40,3 +79,37 @@ class TodoController extends Controller
     }
 
 }
+// データの流れ（store）
+// フォームから content が送られる
+// Request クラスが受け取る
+// validate() でチェック（バリデーション）
+// 新しい Todo モデルを生成
+// content を代入
+// save() でDBに保存
+// 一覧ページ（todo.index）にリダイレクト
+
+// [1] ユーザーがフォームに「やること」を入力して送信
+//      ↓
+// [2] POST /todo に飛ぶ（Route）
+//      ↓
+// [3] TodoController@store 実行
+//      ↓
+// [4] バリデーションチェック
+//      ↓
+// [5] OKならTodoモデルに保存
+//      ↓
+// [6] リダイレクトで一覧ページへ
+//      ↓
+// [7] index() でDBから全件取得 → Bladeに渡す
+//      ↓
+// [8] index.blade.php で一覧表示
+
+// Laravel のコントローラー TodoController を定義しており、
+// 「ToDoリストアプリ」の基本的な CRUD のうち、
+// 一覧表示・作成フォーム・保存処理を実装しています。
+
+        // dd($todos);
+        // TodoModelを介して、todosテーブルのデータの全件取得を確認できたためddは削除（var_dampの機能）
+
+POST はぼでいに含まれて＄＿POSTで取り出せている
+GETはURL
