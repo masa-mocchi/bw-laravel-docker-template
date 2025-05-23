@@ -38,7 +38,7 @@ class TodoController extends Controller
 
 
     // 4.create() メソッド – 作成フォームの表示
-    // 作成フォーム用のビュー resources/views/todo/create.blade.php を表示。
+
     public function create()
     {
         return view('todo.create');
@@ -49,6 +49,57 @@ class TodoController extends Controller
         $todo = $this->todo->find($id);
         return view('todo.show', ['todo' => $todo]);
     }
+
+    public function store(Request $request)
+    {
+        $inputs = $request->all();
+    
+        $this->todo->fill($inputs);
+        $this->todo->save();
+    
+        return redirect()->route('todo.index');
+    }
+
+    public function edit($id)
+    {
+        $todo = $this->todo->find($id);
+        return view('todo.edit', ['todo' => $todo]);
+    }
+}
+
+
+// データの流れ（store）
+// フォームから content が送られる
+// Request クラスが受け取る
+// validate() でチェック（バリデーション）
+// 新しい Todo モデルを生成
+// content を代入
+// save() でDBに保存
+// 一覧ページ（todo.index）にリダイレクト
+
+// [1] ユーザーがフォームに「やること」を入力して送信
+//      ↓
+// [2] POST /todo に飛ぶ（Route）
+//      ↓
+// [3] TodoController@store 実行
+//      ↓
+// [4] バリデーションチェック
+//      ↓
+// [5] OKならTodoモデルに保存
+//      ↓
+// [6] リダイレクトで一覧ページへ
+//      ↓
+// [7] index() でDBから全件取得 → Bladeに渡す
+//      ↓
+// [8] index.blade.php で一覧表示
+
+// Laravel のコントローラー TodoController を定義しており、
+// 「ToDoリストアプリ」の基本的な CRUD のうち、
+// 一覧表示・作成フォーム・保存処理を実装しています。
+
+        // dd($todos);
+        // TodoModelを介して、todosテーブルのデータの全件取得を確認できたためddは削除（var_dampの機能）
+
 
     // 5. store() メソッド – フォームの保存処理
     // $request->all() で POSTデータをすべて取得。
@@ -81,48 +132,3 @@ class TodoController extends Controller
     // "content" => "dd($inputs);"
     // ]
     // ->fill()は$todo->{連想配列のkey} = {連想配列のvalue}を配列の全ての要素に対して行ってくれます。
-
-    
-    public function store(Request $request)
-    {
-        $inputs = $request->all();
-    
-        $this->todo->fill($inputs);
-        $this->todo->save();
-    
-        return redirect()->route('todo.index');
-    }
-
-
-}
-// データの流れ（store）
-// フォームから content が送られる
-// Request クラスが受け取る
-// validate() でチェック（バリデーション）
-// 新しい Todo モデルを生成
-// content を代入
-// save() でDBに保存
-// 一覧ページ（todo.index）にリダイレクト
-
-// [1] ユーザーがフォームに「やること」を入力して送信
-//      ↓
-// [2] POST /todo に飛ぶ（Route）
-//      ↓
-// [3] TodoController@store 実行
-//      ↓
-// [4] バリデーションチェック
-//      ↓
-// [5] OKならTodoモデルに保存
-//      ↓
-// [6] リダイレクトで一覧ページへ
-//      ↓
-// [7] index() でDBから全件取得 → Bladeに渡す
-//      ↓
-// [8] index.blade.php で一覧表示
-
-// Laravel のコントローラー TodoController を定義しており、
-// 「ToDoリストアプリ」の基本的な CRUD のうち、
-// 一覧表示・作成フォーム・保存処理を実装しています。
-
-        // dd($todos);
-        // TodoModelを介して、todosテーブルのデータの全件取得を確認できたためddは削除（var_dampの機能）
