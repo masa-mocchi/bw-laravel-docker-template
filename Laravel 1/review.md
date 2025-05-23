@@ -404,3 +404,9 @@ Todoモデルで「どのプロパティを一括代入していいか」を許�
 モデルにこのような記述が必要：
 php
 protected $fillable = ['content'];
+
+
+
+
+POST はbodyに含まれて＄＿POSTで取り出せている
+GETはURLに含まれる

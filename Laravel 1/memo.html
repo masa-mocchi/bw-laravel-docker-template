@@ -1,0 +1,147 @@
+<!-- ① モデルの構造（App\Todo）
+まず、モデルって何？というと…
+
+🔸**「DBの1つのテーブルを表すクラス」**で、データの取得・保存などをEloquent ORMで扱えるようにするもの！
+
+ファイルパス
+app/Todo.php
+
+① モデルの構造（App\Todo）
+まず、モデルって何？というと…
+
+🔸**「DBの1つのテーブルを表すクラス」**で、データの取得・保存などをEloquent ORMで扱えるようにするもの！
+
+📁 ファイルパス
+bash
+コピーする
+編集する
+app/Todo.php
+✅ 例：Todoモデルの基本構造
+php
+コピーする
+編集する
+<?php
+
+namespace App;
+
+use Illuminate\Database\Eloquent\Model;
+
+class Todo extends Model
+{
+    protected $fillable = ['content'];
+}
+🔍 詳解
+要素	説明
+namespace App;	このクラスは App名前空間にある
+Model継承	Eloquentモデル。DBとやり取りできる
+$fillable	「ホワイトリスト」。フォームから保存可能なカラムを明示する（セキュリティ対策）
+
+🔹 ② storeメソッドの中身
+POST /todo で呼ばれる TodoController@store を見ていくよ。
+
+php
+コピーする
+編集する
+public function store(Request $request)
+{
+    $request->validate([
+        'content' => 'required|max:255',
+    ]);
+
+    $todo = new Todo();
+    $todo->content = $request->input('content');
+    $todo->save();
+
+    return redirect()->route('todo.index');
+}
+✅ データの流れ（ざっくり）
+フォームから content が送られる
+
+Request クラスが受け取る
+
+validate() でチェック（バリデーション）
+
+新しい Todo モデルを生成
+
+content を代入
+
+save() でDBに保存
+
+一覧ページ（todo.index）にリダイレクト
+
+🔹 ③ バリデーションの流れ（$request->validate()）
+php
+コピーする
+編集する
+$request->validate([
+    'content' => 'required|max:255',
+]);
+✅ 解説
+ルール名	意味
+required	必須入力
+max:255	最大255文字まで
+
+✅ 戻り値
+成功：処理続行
+
+失敗：自動で前の画面にリダイレクト＋エラーメッセージ表示（Flash）
+
+✅ データ型
+$request：Illuminate\Http\Request
+
+$request->validate()：バリデーション後の入力データ（array）
+
+🔹 まとめ：一連の処理フロー図（簡易）
+text
+コピーする
+編集する
+[1] ユーザーがフォームに「やること」を入力して送信
+     ↓
+[2] POST /todo に飛ぶ（Route）
+     ↓
+[3] TodoController@store 実行
+     ↓
+[4] バリデーションチェック
+     ↓
+[5] OKならTodoモデルに保存
+     ↓
+[6] リダイレクトで一覧ページへ
+     ↓
+[7] index() でDBから全件取得 → Bladeに渡す
+     ↓
+[8] index.blade.php で一覧表示
+✅ 補足Tips：create() メソッド使う版
+Laravelにはこんな書き方もあるよ！
+
+php
+Todo::create([
+    'content' => $request->input('content'),
+]);
+✅ ただしこれを使うには：
+モデル側で $fillable が必須！
+
+php
+protected $fillable = ['content'];
+これで $todo = new Todo(); せず、1行で保存できる✨ -->
+
+<!-- 「ヘルパー」って何？
+Laravelで「ヘルパー」というと、便利な関数・クラス・メソッドのことをざっくり指す用語。
+
+✅ 例：「request()」「route()」「view()」とかもヘルパー関数
+✅ でも Request クラス自体は厳密には「サービスクラス」。-->
+
+<!-- 🧠 継承ってなに？
+継承とは、「親クラスの性質（プロパティ・メソッド）を、子クラスが引き継いで使える仕組み」 -->
+
+<!-- Collection 型ってなに？
+🧠 一言でいうと：
+配列みたいだけど、便利なメソッドがいっぱい付いたLaravel独自のコレクション！
+
+✅ 例：$todos = Todo::all();
+これは todos テーブルの全レコードを取得。
+
+結果は「Collection型」で返ってくる。
+
+中身は複数の Todo オブジェクトの配列っぽい形。 -->
+
+

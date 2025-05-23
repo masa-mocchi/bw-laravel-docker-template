@@ -1,13 +1,8 @@
 <!doctype html>
-<!-- 共通レイアウトテンプレート -->
-<!-- このファイルに @yield('content') を使うことで、
-子テンプレートがここに内容を挿入できるようになります。 -->
 <html lang="{{ str_replace('_', '-', app()->getLocale()) }}">
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
-  <!-- フォーム送信時にCSRF（クロスサイトリクエストフォージェリ）を防ぐ
-  Laravelがセキュリティのため自動生成。 -->
   <meta name="csrf-token" content="{{ csrf_token() }}">
   <title>{{ config('app.name', 'Laravel') }}</title>
   <link rel="dns-prefetch" href="//fonts.gstatic.com">

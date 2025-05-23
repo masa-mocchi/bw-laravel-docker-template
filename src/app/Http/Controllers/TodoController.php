@@ -38,6 +38,14 @@ class TodoController extends Controller
         return view('todo.create');
     }
 
+    public function show($id)
+    {
+        $model = new Todo();
+        $todo = $model->find($id);
+    
+        return view('todo.show', ['todo' => $todo]);
+    }
+
     // 5. store() メソッド – フォームの保存処理
     // $request->all() で POSTデータをすべて取得。
     // $todo->fill() は、$fillable がモデルに設定されている必要があります（マスアサインメント）。
@@ -110,6 +118,3 @@ class TodoController extends Controller
 
         // dd($todos);
         // TodoModelを介して、todosテーブルのデータの全件取得を確認できたためddは削除（var_dampの機能）
-
-POST はぼでいに含まれて＄＿POSTで取り出せている
-GETはURL
