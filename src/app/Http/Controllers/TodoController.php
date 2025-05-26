@@ -1,22 +1,9 @@
 <?php
 
-// 1. 名前空間と必要なクラスの読み込み
 namespace App\Http\Controllers;
-// Eloquent モデル。todos テーブルとつながっている。
-// SQLを直に書かなくても、オブジェクトを操作するだけでDB操作ができる
-// use文で他のクラスをインポート
-// App\Todo はモデル（Eloquent）
-// Illuminate\Http\Request はフォームリクエストなど、
-// HTTPリクエストのクラス（store() で使う）
 
+use App\Http\Requests\TodoRequest;
 use App\Todo;
-use Illuminate\Http\Request;
-
-// 2. コントローラー定義
-// Laravelの Controller を継承しています
-// （app/Http/Controllers/Controller.php）。
-// Laravelの標準機能（バリデーション、認可など）が使えます。
-// TodoController クラスは Controller クラスを継承している
 
 class TodoController extends Controller
 {
@@ -36,9 +23,6 @@ class TodoController extends Controller
         return view('todo.index', ['todos' => $todos]);
     }
 
-
-    // 4.create() メソッド – 作成フォームの表示
-
     public function create()
     {
         return view('todo.create');
@@ -50,16 +34,13 @@ class TodoController extends Controller
         return view('todo.show', ['todo' => $todo]);
     }
 
-    public function store(Request $request)
+    public function store(TodoRequest $request)
     {
         $inputs = $request->all();
-    
         $this->todo->fill($inputs);
         $this->todo->save();
-    
         return redirect()->route('todo.index');
     }
-    // 正規
 
     public function edit($id)
     {
@@ -67,7 +48,7 @@ class TodoController extends Controller
         return view('todo.edit', ['todo' => $todo]);
     }
 
-    public function update(Request $request, $id) // 第1引数: リクエスト情報の取得　第2引数: ルートパラメータの取得
+    public function update(TodoRequest $request, $id)
     {
         $inputs = $request->all();
         $todo = $this->todo->find($id);
