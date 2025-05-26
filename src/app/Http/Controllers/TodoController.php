@@ -59,13 +59,32 @@ class TodoController extends Controller
     
         return redirect()->route('todo.index');
     }
+    // 正規
 
     public function edit($id)
     {
         $todo = $this->todo->find($id);
         return view('todo.edit', ['todo' => $todo]);
     }
+
+    public function update(Request $request, $id) // 第1引数: リクエスト情報の取得　第2引数: ルートパラメータの取得
+    {
+        $inputs = $request->all();
+        $todo = $this->todo->find($id);
+        $todo->fill($inputs);
+        $todo->save();
+        return redirect()->route('todo.show', $todo->id);
+    }
+    
+            // dd($inputs);
+        // array:3 [▼
+        // "_token" => ""
+        // "_method" => "PUT"
+        // "content" => ""
+        // ]
 }
+
+
 
 
 // データの流れ（store）
